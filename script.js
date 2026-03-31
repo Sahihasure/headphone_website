@@ -42,14 +42,19 @@ for (let i = 0; i < frameCount; i++) {
 function renderInitial(img) {
   const hRatio = canvas.width / img.width;
   const vRatio = canvas.height / img.height;
-  // Use Math.max for cover (fill screen edge-to-edge), or Math.min for contain
-  const ratio  = Math.max(hRatio, vRatio); 
-  const centerShift_x = (canvas.width - img.width * ratio) / 2;
-  const centerShift_y = (canvas.height - img.height * ratio) / 2;  
+  // Using Math.min ensures the headphone fits entirely cleanly inside the viewport without zooming in and pixelating.
+  const ratio  = Math.min(hRatio, vRatio); 
+  // Optionally cap the ratio to prevent artificial stretching of low-res images
+  const finalRatio = Math.min(ratio, 1.5); 
+  
+  const centerShift_x = (canvas.width - img.width * finalRatio) / 2;
+  const centerShift_y = (canvas.height - img.height * finalRatio) / 2;  
   
   context.clearRect(0, 0, canvas.width, canvas.height);
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = 'high';
   context.drawImage(img, 0,0, img.width, img.height,
-                    centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+                    centerShift_x, centerShift_y, img.width * finalRatio, img.height * finalRatio);
 }
 
 function render() {
